@@ -1,0 +1,55 @@
+import random
+
+
+def fs(x) : 
+  if x > 0 :
+    return 1
+  else : 
+    return 0
+
+def perceptron(X_train, y_train, learning_rate, N_epoch) :
+  """ Trains a perceptron on a data set and returns the weights for a certain learning rate and number of epochs """
+  y_hat = np.zeros((len(X_train), 1))
+  #initialise the weights
+  w_i = np.array((random.uniform(0, 1), random.uniform(0, 1))) #Fixing the initial weight
+  w_i0 =random.uniform(0, 15)
+
+  for i in range(N_epoch) : 
+    #epoch
+    for k in range(len(X_train)) : 
+      y_hat[k] = fs(np.dot(w_i, X_train[k]) + w_i0) #actual output
+    
+      for j in range(2) :
+        w_i[j] = w_i[j] + learning_rate * (y_train[k][0] - y_hat[k][0]) * X_train[k][j]
+      w_i0 = w_i0 + learning_rate * (y_train[k][0] - y_hat[k][0])
+
+  return w_i, w_i0
+  
+  
+  
+  #performance measure of the perceptron
+  def performance_perceptron(X, y, a, b) :
+  """ For X and y and a and b, it returns the balanced accuracy of the predictions made on X"""
+  y_hat = np.zeros((len(X), 1))
+  tp=0
+  tn=0
+  fp=0
+  fn=0
+  for k in range(len(X)) :
+    y_hat[k] = fs(np.dot(a, X[k]) + b)
+  for k in range(len(y)) : 
+    if (y_hat[k] == 1 and y[k] == 1) : 
+      tp += 1
+    elif (y_hat[k] == 1 and y[k] == 0) : 
+      fp += 1
+    elif (y_hat[k] == 0 and y[k] == 1) : 
+      fn += 1
+    elif (y_hat[k] == 0 and y[k] == 0) : 
+      tn += 1
+  
+  recall = tp / (tp + fn)
+  specificity = tn / (fp + tn)
+  balanced_accuracy = (recall + specificity) / 2
+  precision = tp / (tp + fp)
+  F1 = (2*precision*recall) / (precision + recall)
+  return balanced_accuracy, precision, recall, F1
